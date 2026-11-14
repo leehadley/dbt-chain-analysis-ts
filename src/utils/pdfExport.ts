@@ -1,4 +1,5 @@
-import html2pdf from 'html2pdf.js';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 import { ChainAnalysis } from '../constants/dbtSkills';
 
 const isMobile = () => {
@@ -25,17 +26,54 @@ export const generatePDF = async (chain: ChainAnalysis, elementId: string) => {
     return;
   }
 
-  // Desktop: use html2pdf
-  const opt = {
-    margin: 10,
-    filename: `${(chain.title || 'dbt-chain').toLowerCase().replace(/[^a-z0-9]/g, '-')}.pdf`,
-    image: { type: 'jpeg' as const, quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true, logging: false },
-    jsPDF: { orientation: 'portrait' as const, unit: 'mm' as const, format: 'a4' }
-  };
+  // Desktop: use html2canvas + jsPDF
+  const filename = `${(chain.title || 'dbt-chain').toLowerCase().replace(/[^a-z0-9]/g, '-')}.pdf`;
 
   try {
-    await html2pdf().set(opt).from(element).save();
+    // Temporarily add print class to apply print styles
+    element.classList.add('print');
+
+    // Capture the element as canvas with light background
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      backgroundColor: '#ffffff',
+      allowTaint: true
+    });
+
+    // Remove print class
+    element.classList.remove('print');
+
+    // Create PDF with A4 dimensions
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4'
+    });
+
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const margin = 10;
+    const imgWidth = pageWidth - (margin * 2);
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    let heightLeft = imgHeight;
+    let position = margin;
+
+    // Add image to PDF, split across pages if needed
+    const imgData = canvas.toDataURL('image/jpeg', 0.98);
+    pdf.addImage(imgData, 'JPEG', margin, position, imgWidth, imgHeight);
+    heightLeft -= (pageHeight - (margin * 2));
+
+    while (heightLeft > 0) {
+      position = heightLeft - imgHeight + margin;
+      pdf.addPage();
+      pdf.addImage(imgData, 'JPEG', margin, position, imgWidth, imgHeight);
+      heightLeft -= (pageHeight - (margin * 2));
+    }
+
+    pdf.save(filename);
   } catch (error) {
     console.error('PDF generation error:', error);
     alert('PDF download failed.\n\nAlternative: Use Print (Ctrl+P) and select "Save as PDF".');
