@@ -13,7 +13,8 @@ import {
   Activity,
   Layers,
   ChevronRight,
-  X
+  X,
+  Info
 } from 'lucide-react';
 import { DEFAULT_DBT_SKILLS, ChainAnalysis } from '../constants/dbtSkills';
 
@@ -148,6 +149,16 @@ export default function VisualCanvas({ chain, setChain }: VisualCanvasProps) {
             <Plus className="w-4 h-4" />
             <span>Add Link</span>
           </button>
+        </div>
+      </div>
+      {/* Beginner Explanation Banner */}
+      <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-3.5 flex items-start space-x-3 text-xs">
+        <Info className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
+        <div className="text-slate-300">
+          <strong className="text-indigo-300 font-semibold block">How to read this flowchart:</strong>
+          <span className="text-[11px] text-slate-400">
+            The flowchart traces how pre-existing vulnerabilities and the spark trigger cascaded into thoughts (🧠), emotions (❤️), body sensations (🫀), and urges (🚶). The <strong>shield icons (🛡️)</strong> show coping circuit breakers attached directly to specific links to stop future dominoes.
+          </span>
         </div>
       </div>
 

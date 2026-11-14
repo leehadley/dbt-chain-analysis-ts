@@ -2,7 +2,7 @@ import { useState } from 'react';
 import {
   Target, ShieldAlert, Zap, GitCommitHorizontal, Scale,
   Sparkles, HeartHandshake, Plus, Trash2, ArrowRight, ArrowLeft,
-  ChevronRight, Check
+  ChevronRight, Check, HelpCircle, Lightbulb, Info
 } from 'lucide-react';
 import { DEFAULT_DBT_SKILLS, VULNERABILITY_PRESETS, ChainAnalysis } from '../constants/dbtSkills';
 
@@ -21,9 +21,10 @@ interface WizardViewProps {
   setChain: (updater: ChainAnalysis | ((prev: ChainAnalysis) => ChainAnalysis)) => void;
   onCompleteToCanvas: () => void;
   onOpenSkills: () => void;
+  onOpenGuide?: () => void;
 }
 
-export default function WizardView({ chain, setChain, onCompleteToCanvas, onOpenSkills }: WizardViewProps) {
+export default function WizardView({ chain, setChain, onCompleteToCanvas, onOpenSkills, onOpenGuide }: WizardViewProps) {
   const [activeStep, setActiveStep] = useState(1);
 
   const updateTargetBehavior = (field: keyof typeof chain.targetBehavior, val: unknown) => {
@@ -139,6 +140,29 @@ export default function WizardView({ chain, setChain, onCompleteToCanvas, onOpen
           </div>
         </div>
       </div>
+      {/* Beginner Help Banner */}
+      {onOpenGuide && (
+        <div className="bg-gradient-to-r from-indigo-950/80 via-purple-950/80 to-slate-900 border border-indigo-500/30 rounded-2xl p-4 mb-6 flex flex-wrap items-center justify-between gap-3 shadow-md">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-300">
+              <HelpCircle className="w-5 h-5 text-indigo-400" />
+            </div>
+            <div>
+              <h3 className="text-xs font-bold text-slate-100">New to DBT Chain Analysis?</h3>
+              <p className="text-[11px] text-slate-400">
+                A chain analysis unpacks a single incident like falling dominoes to discover where coping skills can stop it next time.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={onOpenGuide}
+            className="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow transition flex items-center space-x-1.5"
+          >
+            <Lightbulb className="w-3.5 h-3.5 text-amber-300" />
+            <span>What is Chain Analysis? (Guide)</span>
+          </button>
+        </div>
+      )}
 
       {/* Steps Nav */}
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-2.5 mb-6 shadow-md">
@@ -184,6 +208,16 @@ export default function WizardView({ chain, setChain, onCompleteToCanvas, onOpen
             <span className="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/10 text-red-400 border border-red-500/30">
               The Target
             </span>
+          </div>
+          {/* Beginner Helper Tip */}
+          <div className="bg-slate-900/80 border border-indigo-500/30 rounded-xl p-3 flex items-start space-x-2.5 text-xs">
+            <Info className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
+            <div className="text-slate-300">
+              <strong className="text-indigo-300 font-bold block">💡 What is a Target Behavior?</strong>
+              <p className="text-[11px] text-slate-400 mt-0.5">
+                Pick <strong>ONE specific incident</strong> (e.g. "Slammed door and left meeting at 2:30 PM"), not a general mood or habit. Be objective and non-judgmental—describe what a video camera would record.
+              </p>
+            </div>
           </div>
 
           <div className="space-y-4">
@@ -280,6 +314,16 @@ export default function WizardView({ chain, setChain, onCompleteToCanvas, onOpen
               Pre-Conditions
             </span>
           </div>
+          {/* Beginner Helper Tip */}
+          <div className="bg-slate-900/80 border border-amber-500/30 rounded-xl p-3 flex items-start space-x-2.5 text-xs">
+            <Info className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+            <div className="text-slate-300">
+              <strong className="text-amber-300 font-bold block">💡 What are Vulnerability Factors?</strong>
+              <p className="text-[11px] text-slate-400 mt-0.5">
+                These are conditions that existed <strong>BEFORE the trigger happened</strong> (e.g. 5 hours of sleep, low blood sugar, sensory overload, ADHD burnout, CPTSD threat state). They made your stress cup already 90% full.
+              </p>
+            </div>
+          </div>
 
           {/* Quick-add presets bar */}
           <div className="bg-slate-900/90 border border-slate-700/80 rounded-xl p-3 space-y-2">
@@ -366,6 +410,16 @@ export default function WizardView({ chain, setChain, onCompleteToCanvas, onOpen
               The Spark
             </span>
           </div>
+          {/* Beginner Helper Tip */}
+          <div className="bg-slate-900/80 border border-yellow-500/30 rounded-xl p-3 flex items-start space-x-2.5 text-xs">
+            <Info className="w-4 h-4 text-yellow-400 shrink-0 mt-0.5" />
+            <div className="text-slate-300">
+              <strong className="text-yellow-300 font-bold block">💡 What is a Prompting Event?</strong>
+              <p className="text-[11px] text-slate-400 mt-0.5">
+                The exact <strong>spark or event</strong> that ignited the domino reaction (e.g. an ambiguous Slack message, a sudden loud sound, or a partner's facial expression).
+              </p>
+            </div>
+          </div>
 
           <div className="space-y-4">
             <div>
@@ -442,6 +496,16 @@ export default function WizardView({ chain, setChain, onCompleteToCanvas, onOpen
             <span className="px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/30">
               Sequence ({chain.links.length} links)
             </span>
+          </div>
+          {/* Beginner Helper Tip */}
+          <div className="bg-slate-900/80 border border-cyan-500/30 rounded-xl p-3 flex items-start space-x-2.5 text-xs">
+            <Info className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
+            <div className="text-slate-300">
+              <strong className="text-cyan-300 font-bold block">💡 How do Chain Links work?</strong>
+              <p className="text-[11px] text-slate-400 mt-0.5">
+                Unpack the micro-steps between the spark trigger and the target behavior. Map out thoughts ("They think I'm incompetent"), emotions (Panic), body sensations (Tight chest), and urges ("I need to get out").
+              </p>
+            </div>
           </div>
 
           <div className="flex flex-wrap gap-2 mb-4">
@@ -555,6 +619,16 @@ export default function WizardView({ chain, setChain, onCompleteToCanvas, onOpen
               Outcomes
             </span>
           </div>
+          {/* Beginner Helper Tip */}
+          <div className="bg-slate-900/80 border border-purple-500/30 rounded-xl p-3 flex items-start space-x-2.5 text-xs">
+            <Info className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />
+            <div className="text-slate-300">
+              <strong className="text-purple-300 font-bold block">💡 Short-Term vs. Long-Term Consequences</strong>
+              <p className="text-[11px] text-slate-400 mt-0.5">
+                Behaviors persist because they provide <strong>short-term relief</strong> (e.g., escaping overwhelming anxiety), even though they create <strong>long-term costs</strong> (e.g., guilt, strained trust, isolation).
+              </p>
+            </div>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-slate-900 border border-slate-700 rounded-xl p-4 space-y-2">
@@ -608,6 +682,16 @@ export default function WizardView({ chain, setChain, onCompleteToCanvas, onOpen
             >
               Skills Library
             </button>
+          </div>
+          {/* Beginner Helper Tip */}
+          <div className="bg-slate-900/80 border border-emerald-500/30 rounded-xl p-3 flex items-start space-x-2.5 text-xs">
+            <Info className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+            <div className="text-slate-300">
+              <strong className="text-emerald-300 font-bold block">💡 What are Coping Circuit Breakers?</strong>
+              <p className="text-[11px] text-slate-400 mt-0.5">
+                Attach DBT coping skills (e.g. STOP, TIPP, Check the Facts) directly to specific links where emotional arousal is under 7/10 to stop the domino effect.
+              </p>
+            </div>
           </div>
 
           <div className="space-y-4">
@@ -686,6 +770,16 @@ export default function WizardView({ chain, setChain, onCompleteToCanvas, onOpen
             <span className="px-3 py-1 rounded-full text-xs font-semibold bg-pink-500/10 text-pink-400 border border-pink-500/30">
               Future Plan
             </span>
+          {/* Beginner Helper Tip */}
+          <div className="bg-slate-900/80 border border-pink-500/30 rounded-xl p-3 flex items-start space-x-2.5 text-xs">
+            <Info className="w-4 h-4 text-pink-400 shrink-0 mt-0.5" />
+            <div className="text-slate-300">
+              <strong className="text-pink-300 font-bold block">💡 Prevention &amp; Harm Repair Plan</strong>
+              <p className="text-[11px] text-slate-400 mt-0.5">
+                <strong>Prevention:</strong> How to reduce vulnerabilities in the future (e.g., set boundaries, schedule rest). <strong>Repair:</strong> How to apologize or repair damage to relationships, environment, or self-trust.
+              </p>
+            </div>
+          </div>
           </div>
 
           <div className="space-y-4">

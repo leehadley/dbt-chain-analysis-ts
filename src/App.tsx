@@ -5,6 +5,7 @@ import VisualCanvas from './components/VisualCanvas';
 import ReportView from './components/ReportView';
 import SkillsLibraryModal from './components/SkillsLibraryModal';
 import SavedChainsModal from './components/SavedChainsModal';
+import GuideModal from './components/GuideModal';
 import {
   getSavedChains,
   saveChainToStorage,
@@ -21,6 +22,7 @@ export default function App() {
 
   const [isSkillsModalOpen, setIsSkillsModalOpen] = useState(false);
   const [isSavedModalOpen, setIsSavedModalOpen] = useState(false);
+  const [isGuideModalOpen, setIsGuideModalOpen] = useState(false);
 
   useEffect(() => {
     const loaded = getSavedChains();
@@ -119,6 +121,7 @@ export default function App() {
         onNewChain={handleNewChain}
         onOpenSaved={() => setIsSavedModalOpen(true)}
         onOpenSkills={() => setIsSkillsModalOpen(true)}
+        onOpenGuide={() => setIsGuideModalOpen(true)}
         onExportJSON={handleExportJSON}
       />
 
@@ -130,6 +133,7 @@ export default function App() {
             setChain={handleSetChain}
             onCompleteToCanvas={() => setCurrentTab('canvas')}
             onOpenSkills={() => setIsSkillsModalOpen(true)}
+            onOpenGuide={() => setIsGuideModalOpen(true)}
           />
         )}
 
@@ -165,6 +169,16 @@ export default function App() {
         onDeleteChain={handleDeleteChain}
         onImportJSON={handleImportJSON}
         onLoadDemo={handleLoadDemo}
+        onLoadNDDemo={handleLoadNDDemo}
+      />
+
+      <GuideModal
+        isOpen={isGuideModalOpen}
+        onClose={() => setIsGuideModalOpen(false)}
+        onStartWizard={() => {
+          handleNewChain();
+          setCurrentTab('wizard');
+        }}
         onLoadNDDemo={handleLoadNDDemo}
       />
 

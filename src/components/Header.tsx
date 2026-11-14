@@ -7,7 +7,8 @@ import {
   FolderOpen,
   Plus,
   Download,
-  Brain
+  Brain,
+  HelpCircle
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -17,6 +18,7 @@ interface HeaderProps {
   onNewChain: () => void;
   onOpenSaved: () => void;
   onOpenSkills: () => void;
+  onOpenGuide: () => void;
   onExportJSON: () => void;
 }
 
@@ -27,6 +29,7 @@ export default function Header({
   onNewChain,
   onOpenSaved,
   onOpenSkills,
+  onOpenGuide,
   onExportJSON
 }: HeaderProps) {
   return (
@@ -93,6 +96,15 @@ export default function Header({
 
           {/* Action Buttons */}
           <div className="flex items-center space-x-2">
+            <button
+              onClick={onOpenGuide}
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 transition"
+              title="What is a Chain Analysis? Beginner Guide"
+            >
+              <HelpCircle className="w-4 h-4 text-indigo-400" />
+              <span className="hidden sm:inline">Guide</span>
+            </button>
+
             <button
               onClick={onOpenSkills}
               className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition"
