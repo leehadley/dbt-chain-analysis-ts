@@ -524,5 +524,40 @@ export const VULNERABILITY_PRESETS: VulnerabilityPreset[] = [
   // General / Physical
   { label: '💤 Physical: Sleep Deprivation', text: 'Slept less than 5 hours / Poor sleep quality', category: 'Sleep' },
   { label: '🍎 Physical: Low Blood Sugar / Hangry', text: 'Skipped meal / Low blood sugar', category: 'Physical' },
-  { label: '🤒 Physical: Chronic Pain / Illness', text: 'Physical pain or illness flare-up', category: 'Physical' }
+  { label: '🤒 Physical: Chronic Pain / Illness', text: 'Physical pain or illness flare-up', category: 'Physical' },
+  { label: '☕ Physical: Caffeine / Sugar Crash', text: 'High caffeine intake or sudden sugar/caffeine withdrawal', category: 'Physical' },
+  { label: '💊 Physical: Medication Changes', text: 'Missed medication dose or new medication side effects', category: 'Physical' },
+  { label: '🩸 Physical: Hormonal Changes', text: 'Menstrual cycle, hormonal medications, or hormone-related mood shifts', category: 'Physical' },
+
+  // Relationships & Social
+  { label: '💔 Social: Relationship Conflict', text: 'Tension, argument, or unresolved conflict with someone close', category: 'Social' },
+  { label: '😔 Social: Loneliness / Isolation', text: 'Feeling alone, disconnected, or lacking meaningful connection', category: 'Social' },
+  { label: '🗣️ Social: Feeling Misunderstood', text: 'Sense that others don\'t understand or value your perspective', category: 'Social' },
+  { label: '👥 Social: Difficult Social Obligation', text: 'Forced social interaction, unwanted event, or obligatory gathering', category: 'Social' },
+
+  // Work / School / Performance
+  { label: '📚 Work/School: Deadline Pressure', text: 'Looming deadlines, time crunch, or high-stakes project', category: 'Work' },
+  { label: '📈 Work/School: Performance Pressure', text: 'High expectations, perfectionism, or fear of failure', category: 'Work' },
+  { label: '😫 Work/School: Overwhelming Workload', text: 'Too many tasks, conflicting priorities, or feeling behind', category: 'Work' },
+  { label: '⚖️ Work/School: Work-Life Imbalance', text: 'No boundary between work and personal time; always "on"', category: 'Work' },
+
+  // Environmental & Life Events
+  { label: '🌧️ Environmental: Weather / Seasonal Changes', text: 'Seasonal affective disorder, weather sensitivity, or seasonal transitions', category: 'Environment' },
+  { label: '💰 Environmental: Financial Stress', text: 'Money worries, unexpected expenses, or financial uncertainty', category: 'Environment' },
+  { label: '🏠 Environmental: Housing / Living Instability', text: 'Moving, housing problems, or living situation conflict', category: 'Environment' },
+  { label: '😢 Environmental: Grief / Loss / Anniversary', text: 'Loss of loved one, anniversary of trauma, or major life change', category: 'Environment' },
+  { label: '✈️ Environmental: Travel / Routine Disruption', text: 'Travel, time zone change, or break from normal routine', category: 'Environment' },
+
+  // Substance & Behavioral
+  { label: '📱 Behavioral: Excessive Screen Time', text: 'Spending too much time online, gaming, or doomscrolling', category: 'Behavioral' },
+  { label: '🎮 Behavioral: Boredom / Lack of Stimulation', text: 'Understimulated, restless, or lacking engaging activities', category: 'Behavioral' },
+  { label: '⏰ Behavioral: Rushing / Time Pressure', text: 'Feeling rushed, running late, or time-constrained', category: 'Behavioral' },
+  { label: '🚫 Behavioral: Avoidance Backlog', text: 'Tasks piling up due to avoidance; mounting sense of dread', category: 'Behavioral' },
+
+  // Emotional / Psychological
+  { label: '😰 Emotional: Anticipatory Anxiety', text: 'Worry about future events, "what-if" thinking, or catastrophizing', category: 'Emotional' },
+  { label: '😔 Emotional: Low Mood / Anhedonia', text: 'Depression, loss of interest in activities, or lack of motivation', category: 'Emotional' },
+  { label: '🔄 Emotional: Rumination / Obsessive Thoughts', text: 'Stuck in thought loops, intrusive thoughts, or repetitive worry', category: 'Emotional' },
+  { label: '😞 Emotional: Low Self-Esteem / Shame', text: 'Self-criticism, feeling inadequate, or internalized shame', category: 'Emotional' },
+  { label: '🤝 Emotional: Feeling Unworthy of Help', text: 'Shame spiral, believing you don\'t deserve support or care', category: 'Emotional' }
 ];
