@@ -13,6 +13,12 @@ export default function ReportView({ chain }: ReportViewProps) {
   };
 
   const handleExportPDF = async () => {
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if (isMobile) {
+      alert('On mobile:\n1. Tap the Share icon (↗️) or Menu (⋮)\n2. Select "Print" or "Print to PDF"\n3. Download the PDF\n\nOr try the Print button below.');
+    }
+
     await generatePDF(chain, 'report-sheet');
   };
 
