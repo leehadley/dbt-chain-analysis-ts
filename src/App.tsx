@@ -105,6 +105,18 @@ export default function App() {
     setChain(importedChain);
   };
 
+  const handleResetApp = () => {
+    if (window.confirm('Are you sure? This will delete all saved chain analyses and reset the app to its initial state.')) {
+      localStorage.clear();
+      setChain(EMPTY_CHAIN_ANALYSIS);
+      setSavedChains([]);
+      setCurrentTab('wizard');
+      setIsInfoPanelOpen(true);
+      setIsSkillsModalOpen(false);
+      setIsSavedModalOpen(false);
+    }
+  };
+
   const handleExportJSON = () => {
     const filename = `${(chain.title || 'dbt-chain').toLowerCase().replace(/[^a-z0-9]/g, '-')}.json`;
     downloadJSON(chain, filename);
@@ -122,6 +134,7 @@ export default function App() {
         onOpenSaved={() => setIsSavedModalOpen(true)}
         onOpenSkills={() => setIsSkillsModalOpen(true)}
         onOpenGuide={() => setIsInfoPanelOpen(true)}
+        onReset={handleResetApp}
         onExportJSON={handleExportJSON}
       />
 

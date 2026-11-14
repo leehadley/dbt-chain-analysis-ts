@@ -8,7 +8,8 @@ import {
   Plus,
   Download,
   Brain,
-  HelpCircle
+  HelpCircle,
+  RotateCcw
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -19,6 +20,7 @@ interface HeaderProps {
   onOpenSaved: () => void;
   onOpenSkills: () => void;
   onOpenGuide: () => void;
+  onReset: () => void;
   onExportJSON: () => void;
 }
 
@@ -30,6 +32,7 @@ export default function Header({
   onOpenSaved,
   onOpenSkills,
   onOpenGuide,
+  onReset,
   onExportJSON
 }: HeaderProps) {
   return (
@@ -129,6 +132,14 @@ export default function Header({
               title="Export JSON"
             >
               <Download className="w-4 h-4" />
+            </button>
+
+            <button
+              onClick={onReset}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-red-400 bg-slate-800 hover:bg-slate-700 border border-slate-700 transition"
+              title="Reset app - Clear all data and start fresh"
+            >
+              <RotateCcw className="w-4 h-4" />
             </button>
 
             <button
