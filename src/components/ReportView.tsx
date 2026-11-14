@@ -1,19 +1,38 @@
 // No React import needed for React 17+ JSX transform
-import { Printer, Calendar, Clock, Target, ShieldAlert, Zap, GitCommitHorizontal, Scale, Sparkles, HeartHandshake, Download } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Printer, Calendar, Clock, Target, ShieldAlert, Zap, GitCommitHorizontal, Scale, Sparkles, HeartHandshake, Download, Loader2 } from 'lucide-react';
 import { ChainAnalysis } from '../constants/dbtSkills';
-import { generatePDF } from '../utils/pdfExport';
+import { generatePDF, preloadPdfLib } from '../utils/pdfExport';
 
 interface ReportViewProps {
   chain: ChainAnalysis;
 }
 
 export default function ReportView({ chain }: ReportViewProps) {
+  const [exporting, setExporting] = useState(false);
+  const [manualPdf, setManualPdf] = useState<{ url: string; filename: string } | null>(null);
+
+  useEffect(() => {
+    preloadPdfLib();
+  }, []);
+
+  // Release the blob URL when it's replaced or the view unmounts.
+  useEffect(() => {
+    return () => {
+      if (manualPdf) URL.revokeObjectURL(manualPdf.url);
+    };
+  }, [manualPdf]);
+
   const handlePrint = () => {
     window.print();
   };
 
   const handleExportPDF = async () => {
-    await generatePDF(chain);
+    setExporting(true);
+    setManualPdf(null);
+    const result = await generatePDF(chain);
+    setExporting(false);
+    if (result.status === 'manual') setManualPdf({ url: result.url, filename: result.filename });
   };
 
   return (
@@ -27,11 +46,12 @@ export default function ReportView({ chain }: ReportViewProps) {
         <div className="flex items-center space-x-2 w-full sm:w-auto">
           <button
             onClick={handleExportPDF}
-            className="flex-1 sm:flex-none flex items-center justify-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-semibold bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-lg transition"
+            disabled={exporting}
+            className="flex-1 sm:flex-none flex items-center justify-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-semibold bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 disabled:opacity-60 text-white shadow-lg transition"
             title="Download as PDF"
           >
-            <Download className="w-4 h-4" />
-            <span>Download PDF</span>
+            {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+            <span>{exporting ? 'Creating…' : 'Download PDF'}</span>
           </button>
           <button
             onClick={handlePrint}
@@ -43,6 +63,23 @@ export default function ReportView({ chain }: ReportViewProps) {
           </button>
         </div>
       </div>
+
+      {/* Mobile fallback: a real tap on this link is what lets the browser open/save the file */}
+      {manualPdf && (
+        <div className="no-print bg-emerald-950/40 border border-emerald-500/30 rounded-2xl p-4 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <p className="text-xs text-emerald-300">Your PDF is ready. Tap to open it, then use your browser's share or save option.</p>
+          <a
+            href={manualPdf.url}
+            download={manualPdf.filename}
+            target="_blank"
+            rel="noopener"
+            className="flex items-center justify-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg transition"
+          >
+            <Download className="w-4 h-4" />
+            <span>Open PDF</span>
+          </a>
+        </div>
+      )}
 
       {/* Printable Sheet */}
       <div id="report-sheet" className="bg-slate-900 print:bg-white text-slate-100 print:text-black border border-slate-800 print:border-none rounded-3xl p-8 shadow-2xl space-y-8 font-sans">

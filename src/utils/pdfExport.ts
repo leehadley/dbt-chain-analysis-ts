@@ -32,7 +32,10 @@ const toPdfText = (value: string) =>
     .replace(/[ \t]{2,}/g, ' ')
     .trim();
 
-const isMobile = () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+// iPadOS Safari reports a desktop (Macintosh) user agent, so also treat touch-capable Macs as mobile.
+const isMobile = () =>
+  /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+  (/Macintosh/i.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
 
 export const buildPdf = async (chain: ChainAnalysis): Promise<jsPDF> => {
   const { jsPDF: JsPDF } = await import('jspdf');
@@ -158,19 +161,31 @@ export const buildPdf = async (chain: ChainAnalysis): Promise<jsPDF> => {
   return doc;
 };
 
-const deliver = async (blob: Blob, filename: string) => {
-  // Mobile: the share sheet is the only reliable way to save/open a generated file (iOS ignores `download`).
-  if (isMobile() && typeof navigator.canShare === 'function') {
-    const file = new File([blob], filename, { type: 'application/pdf' });
-    if (navigator.canShare({ files: [file] })) {
-      try {
-        await navigator.share({ files: [file], title: filename });
-        return;
-      } catch (error) {
-        if ((error as DOMException).name === 'AbortError') return; // user dismissed the sheet
-        console.warn('Share failed, falling back to download:', error);
+// Result of an export. `manual` means the browser wouldn't let us save/share the file from code,
+// so the caller must show `url` as a link the user taps (a real tap works in every mobile browser).
+export type PdfResult = { status: 'done' } | { status: 'manual'; url: string; filename: string };
+
+// Warm the lazy jsPDF chunk so the tap handler never awaits a network import before share()/download.
+export const preloadPdfLib = () => {
+  void import('jspdf');
+};
+
+const deliver = async (blob: Blob, filename: string): Promise<PdfResult> => {
+  // Mobile: programmatic downloads are unreliable (iOS ignores them), so share the file or hand back a link.
+  if (isMobile()) {
+    if (typeof navigator.canShare === 'function' && typeof navigator.share === 'function') {
+      const file = new File([blob], filename, { type: 'application/pdf' });
+      if (navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file], title: filename });
+          return { status: 'done' };
+        } catch (error) {
+          if ((error as DOMException).name === 'AbortError') return { status: 'done' }; // user dismissed the sheet
+          console.warn('Share failed, offering manual link:', error);
+        }
       }
     }
+    return { status: 'manual', url: URL.createObjectURL(blob), filename };
   }
 
   const url = URL.createObjectURL(blob);
@@ -180,17 +195,18 @@ const deliver = async (blob: Blob, filename: string) => {
   document.body.appendChild(link);
   link.click();
   link.remove();
-  // Browsers without `download` support (older iOS Safari) just navigate to the PDF, which is still viewable.
   setTimeout(() => URL.revokeObjectURL(url), 60_000);
+  return { status: 'done' };
 };
 
-export const generatePDF = async (chain: ChainAnalysis) => {
+export const generatePDF = async (chain: ChainAnalysis): Promise<PdfResult> => {
   const filename = `${(chain.title || 'dbt-chain').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'dbt-chain'}.pdf`;
   try {
     const doc = await buildPdf(chain);
-    await deliver(doc.output('blob'), filename);
+    return await deliver(doc.output('blob'), filename);
   } catch (error) {
     console.error('PDF generation error:', error);
     alert('PDF export failed.\n\nAlternative: use the Print button and choose "Save as PDF".');
+    return { status: 'done' };
   }
 };
