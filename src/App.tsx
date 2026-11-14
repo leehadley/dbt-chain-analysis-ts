@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Header from './components/Header';
 import WizardView from './components/WizardView';
 import VisualCanvas from './components/VisualCanvas';
@@ -6,110 +6,32 @@ import ReportView from './components/ReportView';
 import SkillsLibraryModal from './components/SkillsLibraryModal';
 import SavedChainsModal from './components/SavedChainsModal';
 import InfoPanel from './components/InfoPanel';
-import {
-  getSavedChains,
-  saveChainToStorage,
-  deleteChainFromStorage,
-  generateId,
-  downloadJSON
-} from './utils/storage';
+import { generateId, downloadJSON } from './utils/storage';
 import { EMPTY_CHAIN_ANALYSIS, SAMPLE_CHAIN_ANALYSIS, NEURODIVERGENT_SOCIAL_AVOIDANCE_CHAIN, ChainAnalysis } from './constants/dbtSkills';
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<'wizard' | 'canvas' | 'report'>('wizard');
-  const [savedChains, setSavedChains] = useState<ChainAnalysis[]>([]);
-  const [chain, setChain] = useState<ChainAnalysis>(NEURODIVERGENT_SOCIAL_AVOIDANCE_CHAIN);
+  const [chain, setChain] = useState<ChainAnalysis>(EMPTY_CHAIN_ANALYSIS);
 
   const [isSkillsModalOpen, setIsSkillsModalOpen] = useState(false);
   const [isSavedModalOpen, setIsSavedModalOpen] = useState(false);
   const [isInfoPanelOpen, setIsInfoPanelOpen] = useState(true);
 
-  useEffect(() => {
-    const loaded = getSavedChains();
-    if (loaded && loaded.length > 0) {
-      setSavedChains(loaded);
-      setChain(loaded[0]);
-    } else {
-      saveChainToStorage(NEURODIVERGENT_SOCIAL_AVOIDANCE_CHAIN);
-      saveChainToStorage(SAMPLE_CHAIN_ANALYSIS);
-      setSavedChains([NEURODIVERGENT_SOCIAL_AVOIDANCE_CHAIN, SAMPLE_CHAIN_ANALYSIS]);
-      setChain(NEURODIVERGENT_SOCIAL_AVOIDANCE_CHAIN);
-    }
-  }, []);
-
   const handleSetChain = (updater: ChainAnalysis | ((prev: ChainAnalysis) => ChainAnalysis)) => {
     setChain(prev => {
       const nextChain = typeof updater === 'function' ? updater(prev) : updater;
-      saveChainToStorage(nextChain);
-      setSavedChains(getSavedChains());
       return nextChain;
     });
   };
 
   const handleNewChain = () => {
-    const newId = generateId('chain');
-    const newChainObj: ChainAnalysis = {
-      ...EMPTY_CHAIN_ANALYSIS,
-      id: newId,
-      date: new Date().toISOString().split('T')[0],
-      time: new Date().toTimeString().slice(0, 5)
-    };
-    saveChainToStorage(newChainObj);
-    setSavedChains(getSavedChains());
-    setChain(newChainObj);
+    setChain(EMPTY_CHAIN_ANALYSIS);
     setCurrentTab('wizard');
   };
 
-  const handleDeleteChain = (id: string) => {
-    deleteChainFromStorage(id);
-    const updated = getSavedChains();
-    setSavedChains(updated);
-    if (chain.id === id) {
-      if (updated.length > 0) {
-        setChain(updated[0]);
-      } else {
-        handleNewChain();
-      }
-    }
-  };
-
-  const handleLoadDemo = () => {
-    const demoWithNewId: ChainAnalysis = {
-      ...SAMPLE_CHAIN_ANALYSIS,
-      id: generateId('chain-demo'),
-      title: 'Demo: Workplace Conflict & Overwhelmed Outburst'
-    };
-    saveChainToStorage(demoWithNewId);
-    setSavedChains(getSavedChains());
-    setChain(demoWithNewId);
-    setIsSavedModalOpen(false);
-  };
-
-  const handleLoadNDDemo = () => {
-    const demoWithNewId: ChainAnalysis = {
-      ...NEURODIVERGENT_SOCIAL_AVOIDANCE_CHAIN,
-      id: generateId('chain-nd-template'),
-      date: new Date().toISOString().split('T')[0],
-      time: new Date().toTimeString().slice(0, 5)
-    };
-    saveChainToStorage(demoWithNewId);
-    setSavedChains(getSavedChains());
-    setChain(demoWithNewId);
-    setIsSavedModalOpen(false);
-  };
-
-
-  const handleImportJSON = (importedChain: ChainAnalysis) => {
-    saveChainToStorage(importedChain);
-    setSavedChains(getSavedChains());
-    setChain(importedChain);
-  };
-
   const handleResetApp = () => {
-    if (window.confirm('Are you sure? This will delete all saved chain analyses and reset the app to its initial state.')) {
-      localStorage.clear();
+    if (window.confirm('Start a fresh analysis? All current data will be cleared.')) {
       setChain(EMPTY_CHAIN_ANALYSIS);
-      setSavedChains([]);
       setCurrentTab('wizard');
       setIsInfoPanelOpen(true);
       setIsSkillsModalOpen(false);
@@ -146,7 +68,6 @@ export default function App() {
             setChain={handleSetChain}
             onCompleteToCanvas={() => setCurrentTab('canvas')}
             onOpenSkills={() => setIsSkillsModalOpen(true)}
-            onOpenGuide={() => setIsInfoPanelOpen(true)}
           />
         )}
 
@@ -181,13 +102,13 @@ export default function App() {
       <SavedChainsModal
         isOpen={isSavedModalOpen}
         onClose={() => setIsSavedModalOpen(false)}
-        savedChains={savedChains}
+        savedChains={[]}
         activeChainId={chain.id}
-        onSelectChain={(c) => setChain(c)}
-        onDeleteChain={handleDeleteChain}
-        onImportJSON={handleImportJSON}
-        onLoadDemo={handleLoadDemo}
-        onLoadNDDemo={handleLoadNDDemo}
+        onSelectChain={() => {}}
+        onDeleteChain={() => {}}
+        onImportJSON={(imported) => setChain(imported)}
+        onLoadDemo={() => setChain({ ...SAMPLE_CHAIN_ANALYSIS, id: generateId('demo-sample') })}
+        onLoadNDDemo={() => setChain({ ...NEURODIVERGENT_SOCIAL_AVOIDANCE_CHAIN, id: generateId('demo-nd') })}
       />
 
     </div>
