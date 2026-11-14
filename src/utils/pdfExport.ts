@@ -13,17 +13,16 @@ export const generatePDF = async (chain: ChainAnalysis, elementId: string) => {
     return;
   }
 
-  // On mobile, use native print dialog which converts to PDF
+  // On mobile, show instructions only
   if (isMobile()) {
-    try {
-      window.print();
-      alert('Use your device\'s Print menu → Save as PDF to download the report');
-      return;
-    } catch (error) {
-      console.error('Print fallback failed:', error);
-      alert('Unable to export PDF on mobile. Please use: Menu → Print → Save as PDF');
-      return;
-    }
+    alert(
+      '📱 Mobile PDF Export:\n\n' +
+      'Step 1: Tap the Print button below\n' +
+      'Step 2: Look for "Save as PDF" or "PDF" option\n' +
+      'Step 3: Choose download location\n\n' +
+      'Note: The exact steps vary by browser (Chrome, Safari, Firefox, etc.)'
+    );
+    return;
   }
 
   // Desktop: use html2pdf
@@ -39,13 +38,9 @@ export const generatePDF = async (chain: ChainAnalysis, elementId: string) => {
     await html2pdf().set(opt).from(element).save();
   } catch (error) {
     console.error('PDF generation error:', error);
-    alert('PDF export failed. Try using Print (Ctrl+P) and select "Save as PDF" instead.');
+    alert('PDF download failed.\n\nAlternative: Use Print (Ctrl+P) and select "Save as PDF".');
   }
 };
 
-// Fallback: Use native print functionality
-export const printReport = () => {
-  window.print();
-};
 
 

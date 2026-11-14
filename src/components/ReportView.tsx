@@ -13,14 +13,10 @@ export default function ReportView({ chain }: ReportViewProps) {
   };
 
   const handleExportPDF = async () => {
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-    if (isMobile) {
-      alert('On mobile:\n1. Tap the Share icon (↗️) or Menu (⋮)\n2. Select "Print" or "Print to PDF"\n3. Download the PDF\n\nOr try the Print button below.');
-    }
-
     await generatePDF(chain, 'report-sheet');
   };
+
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
@@ -31,21 +27,23 @@ export default function ReportView({ chain }: ReportViewProps) {
           <p className="text-xs text-slate-400">Formatted for therapy sessions or personal record</p>
         </div>
         <div className="flex items-center space-x-2 w-full sm:w-auto">
-          <button
-            onClick={handleExportPDF}
-            className="flex-1 sm:flex-none flex items-center justify-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-semibold bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-lg transition"
-            title="Download as PDF"
-          >
-            <Download className="w-4 h-4" />
-            <span>Download PDF</span>
-          </button>
+          {!isMobile && (
+            <button
+              onClick={handleExportPDF}
+              className="flex-1 sm:flex-none flex items-center justify-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-semibold bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-lg transition"
+              title="Download as PDF (Desktop only)"
+            >
+              <Download className="w-4 h-4" />
+              <span>Download PDF</span>
+            </button>
+          )}
           <button
             onClick={handlePrint}
-            className="flex-1 sm:flex-none flex items-center justify-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-semibold bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-lg transition"
-            title="Print or print to PDF"
+            className={`${isMobile ? 'flex-1' : 'flex-1 sm:flex-none'} flex items-center justify-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-semibold ${isMobile ? 'bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700' : 'bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700'} text-white shadow-lg transition`}
+            title={isMobile ? 'Open Print dialog to save as PDF' : 'Print or print to PDF'}
           >
             <Printer className="w-4 h-4" />
-            <span className="hidden sm:inline">Print</span>
+            <span>{isMobile ? 'Print / Save as PDF' : 'Print'}</span>
           </button>
         </div>
       </div>
